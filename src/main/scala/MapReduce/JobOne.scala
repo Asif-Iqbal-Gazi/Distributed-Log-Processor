@@ -1,7 +1,7 @@
 package MapReduce
 
 import HelperUtils.DetermineIntervals
-import com.typesafe.config.ConfigFactory
+import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.io.{IntWritable, Text}
@@ -14,12 +14,26 @@ import java.text.SimpleDateFormat
 import scala.jdk.CollectionConverters.IterableHasAsScala
 import scala.util.matching.Regex
 
-object MapReduce {
+object JobOne {
+  private val config: Config = ConfigFactory.load.getConfig("LogConfiguration")
 
-  class MyMapper extends Mapper[Object, Text, Text, IntWritable] {
+  @main def runMapReduce(inputPath: String, outputPath: String): Unit =
+    val conf = new Configuration
+    conf.set("mapred.textoutputformat.separator", ",")
+    val job = Job.getInstance(conf, "MapReduce")
+    job.setJarByClass(classOf[MapperOne])
+    job.setMapperClass(classOf[MapperOne])
+    job.setCombinerClass(classOf[ReducerOne])
+    job.setReducerClass(classOf[ReducerOne])
+    job.setOutputKeyClass(classOf[Text])
+    job.setOutputValueClass(classOf[IntWritable])
+    FileInputFormat.addInputPath(job, new Path(inputPath))
+    FileOutputFormat.setOutputPath(job, new Path(outputPath))
+    job.submit()
+
+  class MapperOne extends Mapper[Object, Text, Text, IntWritable] {
     private final val one = new IntWritable(1)
     private val word = new Text()
-    val config = ConfigFactory.load().getConfig("LogConfiguration")
 
     override def map(key: Object, value: Text, context: Mapper[Object, Text, Text, IntWritable]#Context): Unit = {
       val line = value.toString
@@ -34,54 +48,38 @@ object MapReduce {
 
       // Check if the line matches our log pattern
       line match
-        case logPattern(timeStamp, _, logErrorLevel, _, injectedString) => {
+        case logPattern(timeStamp, _, logErrorLevel, _, injectedString) =>
           // Found a match
           //println(line)
           //println("Log Error Type " + logErrorLevel)
           //println("Injected String " + injectedString)
           // Check for injectedString match
           injectedString match
-            case injectedStringRegex(_) => {
+            case injectedStringRegex(_) =>
               // Found a match
               //println(timeStamp)
               //val keyPart1 = timeStamp.split('.')(0)
+              // Constructing the key (e.g : "intervalStartTime - intervalEndTime,logEErrorLevel")
               val keyPart1 = DetermineIntervals.determineIntervals(timeStamp, dateFormat, interval)
               //println(keyPart1)
               val keyPart2 = logErrorLevel
-              word.set(keyPart1 + " " + keyPart2)
-              println(word.toString + " " + one.toString)
+              word.set(keyPart1 + "," + keyPart2)
               //println(word.toString + " " + one.toString)
               context.write(word, one)
-            }
             case _ =>
-        }
         case _ =>
       // No Match Found
       //super.map(key, value, context)
     }
   }
 
-  class MyReducer extends Reducer[Text, IntWritable, Text, IntWritable] {
+  class ReducerOne extends Reducer[Text, IntWritable, Text, IntWritable] {
     override def reduce(key: Text, values: lang.Iterable[IntWritable], context: Reducer[Text, IntWritable, Text, IntWritable]#Context): Unit = {
       val sum = values.asScala.reduce((valueOne, valueTwo) => new IntWritable(valueOne.get() + valueTwo.get()))
       context.write(key, new IntWritable(sum.get()))
       //super.reduce(key, values, context)
     }
   }
-
-
-  @main def runMapReduce(inputPath: String, outputPath: String) =
-    val conf = new Configuration
-    val job = Job.getInstance(conf, "MapReduce")
-    job.setJarByClass(classOf[MyMapper])
-    job.setMapperClass(classOf[MyMapper])
-    job.setCombinerClass(classOf[MyReducer])
-    job.setReducerClass(classOf[MyReducer])
-    job.setOutputKeyClass(classOf[Text])
-    job.setOutputValueClass(classOf[IntWritable])
-    FileInputFormat.addInputPath(job, new Path(inputPath))
-    FileOutputFormat.setOutputPath(job, new Path(outputPath))
-    job.submit()
   /*
     def main(args: Array[String]): Int = {
       val conf = new Configuration
