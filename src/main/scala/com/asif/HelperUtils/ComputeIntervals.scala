@@ -1,10 +1,10 @@
-package HelperUtils
+package com.asif.HelperUtils
 
 import java.text.SimpleDateFormat
 import java.util.Date
 
-object DetermineIntervals {
-  def determineIntervals(timeStamp: String, dateFormat: String, interval: Int):String = {
+object ComputeIntervals {
+  def determineIntervals(timeStamp: String, dateFormat: String, interval: Int): String = {
     // Setting the date format for intervalStartTime
     val inputDateFormat = new SimpleDateFormat(dateFormat)
     // Setting the date format for intervalEndTime
