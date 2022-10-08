@@ -46,7 +46,7 @@ object MapReduceDriver {
     conf.set("mapred.textoutputformat.separator", ",") // We need the MapReduce output Comma-Seperated
 
     args(2) match
-      case "1" => {
+      case "1" =>
         val job = Job.getInstance(conf, "MapReduce Task 1")
         job.setJarByClass(this.getClass)
         job.setMapperClass(classOf[JobOneMapper])
@@ -57,8 +57,7 @@ object MapReduceDriver {
         FileInputFormat.addInputPath(job, new Path(inputPath))
         FileOutputFormat.setOutputPath(job, new Path(outputPath))
         job.submit()
-      }
-      case "2" => {
+      case "2" =>
         val job = Job.getInstance(conf, "MapReduce Task 2")
         job.setJarByClass(classOf[JobTwoMapper])
         job.setMapperClass(classOf[JobTwoMapper])
@@ -85,8 +84,7 @@ object MapReduceDriver {
         FileInputFormat.addInputPath(job2, new Path(outputPath + "-temp"))
         FileOutputFormat.setOutputPath(job2, new Path(outputPath))
         job2.submit()
-      }
-      case "3" =>{
+      case "3" =>
         val job = Job.getInstance(conf, "MapReduce  Task 3")
         job.setJarByClass(classOf[JobThreeMapper])
         job.setMapperClass(classOf[JobThreeMapper])
@@ -97,18 +95,16 @@ object MapReduceDriver {
         FileInputFormat.addInputPath(job, new Path(inputPath))
         FileOutputFormat.setOutputPath(job, new Path(outputPath))
         job.submit()
-      }
-      case "4" =>{
-        val job = Job.getInstance(conf, "MapReduce 4")
+      case "4" =>
+        val job = Job.getInstance(conf, "MapReduce Task 4")
         job.setJarByClass(classOf[JobFourMapper])
         job.setMapperClass(classOf[JobFourMapper])
-        //job.setCombinerClass(classOf[MaxReducer])
+        job.setCombinerClass(classOf[MaxReducer])
         job.setReducerClass(classOf[MaxReducer])
         job.setOutputKeyClass(classOf[Text])
         job.setOutputValueClass(classOf[IntWritable])
         FileInputFormat.addInputPath(job, new Path(inputPath))
         FileOutputFormat.setOutputPath(job, new Path(outputPath))
         job.submit()
-      }
   }
 }

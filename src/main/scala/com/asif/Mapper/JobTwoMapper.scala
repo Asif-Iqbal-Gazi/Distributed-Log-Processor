@@ -1,14 +1,26 @@
 package com.asif.Mapper
 
-import com.asif.HelperUtils.ComputeIntervals
+import com.asif.HelperUtils.{ComputeIntervals, CreateLogger}
 import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.hadoop.io.{IntWritable, Text}
 import org.apache.hadoop.mapreduce.Mapper
+import org.slf4j.Logger
 
 import scala.util.matching.Regex
 
+/**
+ * This Mapper is used by Task 2.
+ * It will first load configuration file to determine the pattern of the log message (the entire message), injected string's regex & interval.
+ * Then using regex it will first check, if the line matches with the log pattern(the entire log message e.g: "09:01:11.455 [scala-execution-context-global-12] DEBUG com.asif.HelperUtils.Parameters$ - A~9Md_CUb,0")
+ * If matched, then it extracts injectedString(for above example that will be "A~9Md_CUb,0"), timeStamp("09:01:11.455"), logErrorLevel("DEBUG")
+ * Next it will check if the logErrorLevel matches with the desiredLogErrorLevel(loaded from configuration file)
+ * If logErrorLevel == desiredLogErrorLevel, next it checks if the injectedString matches injectedStringRegex pattern. (Note: the regEx pattern is un-anchored type, so if a match occurs anywhere, we consider that)
+ * If above match found, it construct finalKey by calling determineInterval utility function
+ * Finally, it writes to the context.write(finalKey, 1)
+ */
 class JobTwoMapper extends Mapper[Object, Text, Text, IntWritable] {
   private final val one = new IntWritable(1)
+  val logger: Logger = CreateLogger(classOf[JobTwoMapper])
   private val config: Config = ConfigFactory.load.getConfig("LogConfiguration")
   private val word = new Text()
 
@@ -19,11 +31,7 @@ class JobTwoMapper extends Mapper[Object, Text, Text, IntWritable] {
     // Get the desired logErrorLevel from config (For Task 2)
     val desiredLogErrorLevel = config.getString("LogErrorLevel")
     // Get the injected string pattern of the logs from config
-    val injectedStringRegex = new Regex(config.getString("InjectedStringPattern"))
-    // Get the date formatting information of the logs from config
-    val dateFormat = config.getString("DateFormat")
-    // Get the time interval information from config
-    val interval: Int = config.getInt("Interval")
+    val injectedStringRegex = new Regex(config.getString("InjectedStringPattern")).unanchored
 
     // Check if the line matches our log pattern
     line match
@@ -35,8 +43,9 @@ class JobTwoMapper extends Mapper[Object, Text, Text, IntWritable] {
           injectedString match
             case injectedStringRegex(_) =>
               // Found a match
-              val finalKey = ComputeIntervals.determineIntervals(timeStamp, dateFormat, interval)
+              val finalKey = ComputeIntervals.determineIntervals(timeStamp)
               word.set(finalKey)
+              logger.debug(s"${this.getClass.getName}, writing to context:(${word},${one})")
               context.write(word, one)
             case _ =>
         }
