@@ -19,9 +19,9 @@ class CommonReducer extends Reducer[Text, IntWritable, Text, IntWritable] {
   val logger: Logger = CreateLogger(classOf[CommonReducer])
 
   override def reduce(key: Text, values: lang.Iterable[IntWritable], context: Reducer[Text, IntWritable, Text, IntWritable]#Context): Unit = {
-    val sum = values.asScala.reduce((valueOne, valueTwo) => new IntWritable(valueOne.get() + valueTwo.get()))
-    logger.debug(s"${this.getClass.getName}, writing to context:($key,${sum.get()}")
-    context.write(key, new IntWritable(sum.get()))
+    val sum = values.asScala.foldLeft(0)(_ + _.get())
+    logger.debug(s"${this.getClass.getName}, writing to context:($key,$sum")
+    context.write(key, new IntWritable(sum))
     //super.reduce(key, values, context)
   }
 }

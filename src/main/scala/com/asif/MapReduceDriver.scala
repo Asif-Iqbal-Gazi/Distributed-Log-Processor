@@ -41,10 +41,10 @@ object MapReduceDriver {
     logger.info(s"Selected Input Path: $inputPath")
     logger.info(s"Selected Output Path: $outputPath")
 
-    // Setting the common variable
+    // Setting the common variable (Idea is: If any task needs anything different, we will overwrite it there)
     val conf = new Configuration
-    //conf.set("mapred.textoutputformat.separator", ",") // We need the MapReduce output Comma-Seperated
-    conf.set("mapreduce.output.textoutputformat.separator", ",")
+    //conf.set("mapred.textoutputformat.separator", ",") <-- Deprecated
+    conf.set("mapreduce.output.textoutputformat.separator", ",") // We need the MapReduce output Comma-Seperated
     val job = Job.getInstance(conf, "MapReduce Tasks")
     job.setJarByClass(this.getClass)
     job.setCombinerClass(classOf[CommonReducer])
