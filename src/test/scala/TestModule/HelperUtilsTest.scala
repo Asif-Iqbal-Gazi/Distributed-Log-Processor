@@ -34,6 +34,8 @@ class HelperUtilsTest extends AnyFlatSpec with Matchers {
     sampleLog match
       case LogPattern(timeStamp, _*) =>
         assert(timeStamp.equals("09:01:14.477"))
+      case _ =>
+        assert(false)
   }
 
 
