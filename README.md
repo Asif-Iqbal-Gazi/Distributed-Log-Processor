@@ -1,1 +1,151 @@
-# CS441_Homework1
+# CS441_Homework1 - Asif Iqbal Gazi
+The goal of this homework is to solve a distributed computational task of processing large log files and generate distribution of various log statistics using map/reduce computational model.
+
+AWS Deployment Movie Link : [Movie Link](https://www.youtube.com)
+
+## Prerequisites
+This projects requires the followings:
+- Apache Hadoop 3.3.4
+- Java 11
+- IntelliJ IDEA 2022 with Scala Plugin
+- sbt 1.7.2
+
+## Instructions
+To run this project:
+1. Clone this repo
+```
+git clone https://github.com/Asif-Iqbal-Gazi/CS441_Homework1.git
+cd CS441_Homework1
+```
+2. Navigate to resources directory
+```
+cd src/main/resources
+```
+3. Set/Change the parameters in ***application.conf*** to appropriate values specific to the log files you want to extract the statistics
+4. Generate the Jar file
+```
+sbt clean compile assembly
+```
+- Jar file will be in the ***target/scala-3.1.3/*** directory
+5. Start the local hadoop instance
+```
+start-all.sh
+```
+- Make sure if the prerequisites setup done
+6. Create input directory in hadoop distributed filesystem
+```
+hadoop fs -mkdir -p /user/<YOUR_USERNAME>/input
+```
+7. Copy the log files from your local filesystem to hadoop filesystem
+```
+hadoop fs -put <PATH_TO_LOGFILES_ON_YOUR_LOCAL_FILESYSTEM> /user/<YOUR_USERNAME>/input
+```
+8. Executing Map-Reduce job (For running the command below, ensure to copy the Jar file in the current directory)
+```
+hadoop jar CS441_Homework1-assembly-0.1.jar <JOB_NUMBER> /user/<YOUR_USERNAME>/input /user/<YOUR_USERNAME>/output
+```
+9. To view the result
+```
+hadoop fs -cat /user/<YOUR_USERNAME>/output/part*
+```
+10. Take the output in local filesystem
+```
+hadoop fs -cat /user/<YOUR_USERNAME>/output/part* > <PATH_IN_LOCAL_FILESYSTEM>/output.csv
+```
+
+## Description of Tasks
+---
+### Task 1
+---
+
+In this task output will show the distribution of different types of messages across predefined time intervals & injected string instances(as set in the ***Application.conf***) of the designated regex pattern for these log message types.
+
+To Run:
+```
+hadoop jar CS441_Homework1-assembly-0.1.jar 1 /user/<YOUR_USERNAME>/input /user/<YOUR_USERNAME>/output
+```
+
+Sample Output (For, ***1 Hour TimeInterval & InjectedStringPattern = ([a-c][e-g][0-3]|[A-Z][5-9][f-w]){5,15}***)
+```
+04:00:00 - 05:00:00,DEBUG,3
+04:00:00 - 05:00:00,INFO,16
+04:00:00 - 05:00:00,WARN,5
+05:00:00 - 06:00:00,DEBUG,4
+05:00:00 - 06:00:00,INFO,29
+05:00:00 - 06:00:00,WARN,12
+06:00:00 - 07:00:00,DEBUG,2
+06:00:00 - 07:00:00,INFO,39
+06:00:00 - 07:00:00,WARN,5
+07:00:00 - 08:00:00,DEBUG,2
+07:00:00 - 08:00:00,ERROR,1
+07:00:00 - 08:00:00,INFO,41
+07:00:00 - 08:00:00,WARN,15
+08:00:00 - 09:00:00,DEBUG,6
+08:00:00 - 09:00:00,INFO,39
+08:00:00 - 09:00:00,WARN,10
+09:00:00 - 10:00:00,DEBUG,176
+09:00:00 - 10:00:00,ERROR,14
+09:00:00 - 10:00:00,INFO,1262
+09:00:00 - 10:00:00,WARN,313
+10:00:00 - 11:00:00,DEBUG,552
+10:00:00 - 11:00:00,ERROR,54
+10:00:00 - 11:00:00,INFO,3647
+10:00:00 - 11:00:00,WARN,947
+21:00:00 - 22:00:00,DEBUG,19
+21:00:00 - 22:00:00,INFO,125
+21:00:00 - 22:00:00,WARN,40
+```
+---
+### Task 2
+---
+In this task output will display the number of ERROR(can be set to other error type as well) messages sorted in ascending order across predefined time intervals & injected string instances(as set in the ***Application.conf***) of the designated regex pattern.
+
+To Run:
+```
+hadoop jar CS441_Homework1-assembly-0.1.jar 2 /user/<YOUR_USERNAME>/input /user/<YOUR_USERNAME>/output
+```
+
+Sample Output (For, ***5 Minutes TimeInterval & InjectedStringPattern = ([a-c][e-g][0-3]|[A-Z][5-9][f-w]){5,15}***)
+```
+10:15:00 - 10:20:00,16
+10:05:00 - 10:10:00,15
+10:00:00 - 10:05:00,15
+09:55:00 - 10:00:00,13
+10:10:00 - 10:15:00,8
+09:50:00 - 09:55:00,1
+07:20:00 - 07:25:00,1
+```
+---
+### Task 3
+---
+In this task output will display the total number of different error types(DEBUG, INFO, WARN, ERROR) present in the log files.
+
+To Run:
+```
+hadoop jar CS441_Homework1-assembly-0.1.jar 3 /user/<YOUR_USERNAME>/input /user/<YOUR_USERNAME>/output
+```
+
+Sample Output
+```
+DEBUG,10483
+ERROR,1035
+INFO,72754
+WARN,19829
+```
+---
+### Task 4
+---
+In this task output will display the number of characters in each log message or each log message type that contain the highest number of characters in the detected instances of the designated regex pattern.
+
+To Run:
+```
+hadoop jar CS441_Homework1-assembly-0.1.jar 4 /user/<YOUR_USERNAME>/input /user/<YOUR_USERNAME>/output
+```
+
+Sample Output (For, ***InjectedStringPattern = ([a-c][e-g][0-3]|[A-Z][5-9][f-w]){5,15}***)
+```
+DEBUG,45
+ERROR,36
+INFO,45
+WARN,45
+```
