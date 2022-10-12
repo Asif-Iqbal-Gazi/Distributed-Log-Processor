@@ -28,7 +28,7 @@ object MapReduceDriver {
     // Input validation
     logger.info("Validating input...")
     if (args.length != 3 || args(0).toInt > 4 && args(0).toInt < 1) {
-      logger.error("usage: <application_jar> <input_path> <output_path> <jobNo>")
+      logger.error("usage: <application_jar> <jobNo> <input_path> <output_path>")
       System.exit(1)
     }
 
@@ -58,6 +58,7 @@ object MapReduceDriver {
         job.setJobName("MapReduce Task 1")
         //val job = Job.getInstance(conf, "MapReduce Task 1")
         //job.setJarByClass(this.getClass)
+        // Overwrite the Mapper Class for Task 1
         job.setMapperClass(classOf[JobOneMapper])
         //job.setCombinerClass(classOf[CommonReducer])
         //job.setReducerClass(classOf[CommonReducer])
@@ -72,6 +73,7 @@ object MapReduceDriver {
         job.setJobName("MapReduce Task 2 -- Part 1")
         //val job = Job.getInstance(conf, "MapReduce Task 2")
         //job.setJarByClass(classOf[JobTwoMapper])
+        // Overwrite Mapper Class for Task 2 Part 1
         job.setMapperClass(classOf[JobTwoMapper])
         //job.setCombinerClass(classOf[CommonReducer])
         //job.setReducerClass(classOf[CommonReducer])
@@ -79,7 +81,7 @@ object MapReduceDriver {
         //job.setOutputValueClass(classOf[IntWritable])
         FileInputFormat.addInputPath(job, new Path(inputPath))
         FileOutputFormat.setOutputPath(job, new Path(outputPath + "-temp"))
-        job.submit()
+        //job.submit()
         if (!job.waitForCompletion(true)) {
           System.exit(1)
         }
@@ -88,6 +90,7 @@ object MapReduceDriver {
         job2.setJarByClass(classOf[SwapMapper])
         job2.setMapperClass(classOf[SwapMapper])
         job2.setReducerClass(classOf[SwapReducer])
+        // We only need one Reducer for part <--- No effect on AWS though
         job2.setNumReduceTasks(1)
         job2.setMapOutputKeyClass(classOf[IntWritable])
         job2.setMapOutputValueClass(classOf[Text])
