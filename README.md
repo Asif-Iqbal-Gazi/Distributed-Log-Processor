@@ -1,7 +1,7 @@
 # CS441_Homework1 - Asif Iqbal Gazi
 The goal of this homework is to solve a distributed computational task of processing large log files and generate distribution of various log statistics using map/reduce computational model.
 
-AWS Deployment Movie Link : [Movie Link](https://www.youtube.com)
+AWS Deployment Movie Link : [Movie Link](https://youtu.be/vOn6nXUGfgU)
 
 ## Prerequisites
 This projects requires the followings:
