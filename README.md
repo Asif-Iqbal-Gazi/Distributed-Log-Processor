@@ -53,7 +53,7 @@ hadoop fs -cat /user/<YOUR_USERNAME>/output/part*
 hadoop fs -cat /user/<YOUR_USERNAME>/output/part* > <PATH_IN_LOCAL_FILESYSTEM>/output.csv
 ```
 
-## Description of Tasks
+## Description and Explanation of Tasks
 ---
 ### Task 1
 ---
@@ -98,7 +98,7 @@ Sample Output (For, ***1 Hour TimeInterval & InjectedStringPattern = ([a-c][e-g]
 ---
 ### Task 2
 ---
-In this task output will display the number of ERROR(can be set to other error type as well) messages sorted in ascending order across predefined time intervals & injected string instances(as set in the ***Application.conf***) of the designated regex pattern.
+In this task output will display the number of ***ERROR*** (can be set to other error type as well in the ***application.conf*** file) messages sorted in ascending order across predefined time intervals & injected string instances (as set in the ***application.conf***) of the designated injected string regex pattern.
 
 To Run:
 ```
@@ -118,7 +118,7 @@ Sample Output (For, ***5 Minutes TimeInterval & InjectedStringPattern = ([a-c][e
 ---
 ### Task 3
 ---
-In this task output will display the total number of different error types(DEBUG, INFO, WARN, ERROR) present in the log files.
+In this task output will display the total number of different error types (***DEBUG, INFO, WARN, ERROR***) present in the log files.
 
 To Run:
 ```
@@ -135,7 +135,7 @@ WARN,19829
 ---
 ### Task 4
 ---
-In this task output will display the number of characters in each log message or each log message type that contain the highest number of characters in the detected instances of the designated regex pattern.
+In this task output will display the number of characters in each log message for each log message type that contain the highest number of characters in the detected instances of the designated injected string regex pattern.
 
 To Run:
 ```
@@ -149,3 +149,8 @@ ERROR,36
 INFO,45
 WARN,45
 ```
+---
+## Scope for Future Improvement & Limitations
+1. Currently, for Task 2 my implementation uses ***two*** Map-Reduce Job to sort the output in ascending order. In the future, efforts will make effort to do this using ***one*** Map-Reduce job.
+2. Modularize the project structure to have only one Mapper & Reducer class which will automatically adapt based on running context (using helper utils)
+3. Adding more error checks.
