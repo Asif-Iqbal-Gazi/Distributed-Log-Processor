@@ -15,7 +15,7 @@ To run this project:
 1. Clone this repo
 ```
 git clone https://github.com/Asif-Iqbal-Gazi/CS441_MapReduce.git
-cd CS441_Homework1
+cd CS441_MapReduce
 ```
 2. Navigate to resources directory
 ```
