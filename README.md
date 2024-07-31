@@ -14,7 +14,7 @@ This projects requires the followings:
 To run this project:
 1. Clone this repo
 ```
-git clone https://github.com/Asif-Iqbal-Gazi/CS441_Homework1.git
+git clone https://github.com/Asif-Iqbal-Gazi/CS441_MapReduce.git
 cd CS441_Homework1
 ```
 2. Navigate to resources directory
