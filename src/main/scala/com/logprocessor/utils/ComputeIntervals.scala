@@ -1,4 +1,4 @@
-package com.asif.HelperUtils
+package com.logprocessor.utils
 
 import com.typesafe.config.{Config, ConfigFactory}
 
@@ -13,7 +13,7 @@ import java.util.Date
  * Then it starting of the interval with the formula epochTime - (epochTime % (interval * 1000)), remember our interval is in seconds, multiplying it will 1000 converts to millisecond
  * Ending of the interval is startIntervalTime + interval * 100
  * It finally formats everything back returns to user interval string
- * 
+ *
  * e.g: For timeStamp : 09:01:14.477 and interval: 5 seconds
  * This function will return to user "09:01:10 - 09:01:15"
  */
@@ -30,7 +30,6 @@ object ComputeIntervals {
     val outputDateFormat = new SimpleDateFormat("HH:mm:ss")
     // Getting the epochTime from our time stamp
     val epochTime: Long = inputDateFormat.parse(timeStamp).toInstant.toEpochMilli
-    //println(epochTime)
     // Computing the startEpochTime
     val startEpochTime: Long = epochTime - (epochTime % (interval * 1000))
     // Computing the endEpochTime
@@ -38,7 +37,6 @@ object ComputeIntervals {
     // convert both the start & end Time to date, so that we can format them
     val startTime: Date = new Date(startEpochTime)
     val endTime: Date = new Date(endEpochTime)
-    //println(outputDateFormat.format(endTime))
     outputDateFormat.format(startTime) + " - " + outputDateFormat.format(endTime)
   }
 }

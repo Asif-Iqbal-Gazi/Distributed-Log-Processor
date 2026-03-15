@@ -1,6 +1,6 @@
-package com.asif.Reducer
+package com.logprocessor.reducer
 
-import com.asif.HelperUtils.CreateLogger
+import com.logprocessor.utils.CreateLogger
 import org.apache.hadoop.io.{IntWritable, Text}
 import org.apache.hadoop.mapreduce.Reducer
 import org.slf4j.Logger
@@ -15,14 +15,12 @@ import scala.jdk.CollectionConverters.IterableHasAsScala
  * It basically, reduces for the key ki : sum(v1,v2,v3,...vj)
  * Finally, writes that to the context
  */
-class CommonReducer extends Reducer[Text, IntWritable, Text, IntWritable] {
-  val logger: Logger = CreateLogger(classOf[CommonReducer])
+class SumReducer extends Reducer[Text, IntWritable, Text, IntWritable] {
+  val logger: Logger = CreateLogger(classOf[SumReducer])
 
   override def reduce(key: Text, values: lang.Iterable[IntWritable], context: Reducer[Text, IntWritable, Text, IntWritable]#Context): Unit = {
     val sum = values.asScala.foldLeft(0)(_ + _.get())
     logger.debug(s"${this.getClass.getName}, writing to context:($key,$sum")
     context.write(key, new IntWritable(sum))
-    //super.reduce(key, values, context)
   }
 }
-

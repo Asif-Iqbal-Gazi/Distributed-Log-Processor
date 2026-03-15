@@ -7,7 +7,7 @@
  *   either express or implied.  See the License for the specific language governing permissions and limitations under the License.
  *
  */
-package com.asif.HelperUtils
+package com.logprocessor.utils
 
 import org.slf4j.{Logger, LoggerFactory}
 

@@ -1,8 +1,8 @@
-package com.asif
+package com.logprocessor
 
-import com.asif.HelperUtils.CreateLogger
-import com.asif.Mapper.*
-import com.asif.Reducer.{CommonReducer, MaxReducer, SwapReducer}
+import com.logprocessor.utils.CreateLogger
+import com.logprocessor.mapper.*
+import com.logprocessor.reducer.{SumReducer, MaxReducer, SortingReducer}
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.Path
 import org.apache.hadoop.io.{IntWritable, Text}
@@ -47,8 +47,8 @@ object MapReduceDriver {
     conf.set("mapreduce.output.textoutputformat.separator", ",") // We need the MapReduce output Comma-Seperated
     val job = Job.getInstance(conf, "MapReduce Tasks")
     job.setJarByClass(this.getClass)
-    job.setCombinerClass(classOf[CommonReducer])
-    job.setReducerClass(classOf[CommonReducer])
+    job.setCombinerClass(classOf[SumReducer])
+    job.setReducerClass(classOf[SumReducer])
     job.setOutputKeyClass(classOf[Text])
     job.setOutputValueClass(classOf[IntWritable])
 
@@ -56,40 +56,26 @@ object MapReduceDriver {
       case "1" =>
         logger.info("Setting Configuration for Task 1...")
         job.setJobName("MapReduce Task 1")
-        //val job = Job.getInstance(conf, "MapReduce Task 1")
-        //job.setJarByClass(this.getClass)
         // Overwrite the Mapper Class for Task 1
-        job.setMapperClass(classOf[JobOneMapper])
-        //job.setCombinerClass(classOf[CommonReducer])
-        //job.setReducerClass(classOf[CommonReducer])
-        //job.setOutputKeyClass(classOf[Text])
-        //job.setOutputValueClass(classOf[IntWritable])
+        job.setMapperClass(classOf[TimeIntervalDistributionMapper])
         FileInputFormat.addInputPath(job, new Path(inputPath))
         FileOutputFormat.setOutputPath(job, new Path(outputPath))
-        // job.submit() <-- During HADOOP DFS run this blocks hadoop job logs
         System.exit(if (job.waitForCompletion(true)) 0 else 1)
       case "2" =>
         logger.info("Setting Configuration for Task 2_Part 1...")
         job.setJobName("MapReduce Task 2 -- Part 1")
-        //val job = Job.getInstance(conf, "MapReduce Task 2")
-        //job.setJarByClass(classOf[JobTwoMapper])
         // Overwrite Mapper Class for Task 2 Part 1
-        job.setMapperClass(classOf[JobTwoMapper])
-        //job.setCombinerClass(classOf[CommonReducer])
-        //job.setReducerClass(classOf[CommonReducer])
-        //job.setOutputKeyClass(classOf[Text])
-        //job.setOutputValueClass(classOf[IntWritable])
+        job.setMapperClass(classOf[FilteredLogLevelMapper])
         FileInputFormat.addInputPath(job, new Path(inputPath))
         FileOutputFormat.setOutputPath(job, new Path(outputPath + "-temp"))
-        //job.submit()
         if (!job.waitForCompletion(true)) {
           System.exit(1)
         }
         logger.info("Setting Configuration for Task 2_Part 2...")
         val job2 = Job.getInstance(conf, "MapReduce 2 -- Part 2")
-        job2.setJarByClass(classOf[SwapMapper])
-        job2.setMapperClass(classOf[SwapMapper])
-        job2.setReducerClass(classOf[SwapReducer])
+        job2.setJarByClass(classOf[SortingMapper])
+        job2.setMapperClass(classOf[SortingMapper])
+        job2.setReducerClass(classOf[SortingReducer])
         // We only need one Reducer for part <--- No effect on AWS though
         job2.setNumReduceTasks(1)
         job2.setMapOutputKeyClass(classOf[IntWritable])
@@ -99,37 +85,24 @@ object MapReduceDriver {
         FileInputFormat.addInputPath(job2, new Path(outputPath + "-temp"))
         FileOutputFormat.setOutputPath(job2, new Path(outputPath))
         System.exit(if (job2.waitForCompletion(true)) 0 else 1)
-      //job2.submit()
       case "3" =>
         logger.info("Setting Configuration for Task 3...")
         job.setJobName("MapReduce Task 3")
-        //val job = Job.getInstance(conf, "MapReduce  Task 3")
-        //job.setJarByClass(classOf[JobThreeMapper])
-        job.setMapperClass(classOf[JobThreeMapper])
-        //job.setCombinerClass(classOf[CommonReducer])
-        //job.setReducerClass(classOf[CommonReducer])
-        //job.setOutputKeyClass(classOf[Text])
-        //job.setOutputValueClass(classOf[IntWritable])
+        job.setMapperClass(classOf[LogTypeCountMapper])
         FileInputFormat.addInputPath(job, new Path(inputPath))
         FileOutputFormat.setOutputPath(job, new Path(outputPath))
         System.exit(if (job.waitForCompletion(true)) 0 else 1)
-      //job.submit()
       case "4" =>
         logger.info("Setting Configuration for Task 4...")
         job.setJobName("MapReduce Task 4")
-        //val job = Job.getInstance(conf, "MapReduce Task 4")
-        //job.setJarByClass(classOf[JobFourMapper])
         // Setting the MapperClass for Task 4
-        job.setMapperClass(classOf[JobFourMapper])
+        job.setMapperClass(classOf[MaxCharLengthMapper])
         // Overwrite the CombinerClass to "MaxReducer"
         job.setCombinerClass(classOf[MaxReducer])
         // Overwrite the ReducerClass to "MaxReducer"
         job.setReducerClass(classOf[MaxReducer])
-        //job.setOutputKeyClass(classOf[Text])
-        //job.setOutputValueClass(classOf[IntWritable])
         FileInputFormat.addInputPath(job, new Path(inputPath))
         FileOutputFormat.setOutputPath(job, new Path(outputPath))
         System.exit(if (job.waitForCompletion(true)) 0 else 1)
-    //job.submit()
   }
 }

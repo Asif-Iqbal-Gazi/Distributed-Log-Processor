@@ -1,6 +1,6 @@
-package com.asif.Mapper
+package com.logprocessor.mapper
 
-import com.asif.HelperUtils.CreateLogger
+import com.logprocessor.utils.CreateLogger
 import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.hadoop.io.{IntWritable, Text}
 import org.apache.hadoop.mapreduce.Mapper
@@ -17,8 +17,8 @@ import scala.util.matching.Regex
  * Then it iterates over the list and calculates the length of the matched extract.
  * Finally, writes to the context.write(logErrorLevel, extractLength)
  */
-class JobFourMapper extends Mapper[Object, Text, Text, IntWritable] {
-  val logger: Logger = CreateLogger(classOf[JobFourMapper])
+class MaxCharLengthMapper extends Mapper[Object, Text, Text, IntWritable] {
+  val logger: Logger = CreateLogger(classOf[MaxCharLengthMapper])
   private val config: Config = ConfigFactory.load.getConfig("LogConfiguration")
   private val word = new Text()
 
@@ -38,11 +38,9 @@ class JobFourMapper extends Mapper[Object, Text, Text, IntWritable] {
         if (allMatch.nonEmpty) {
           // Found a match
           allMatch.foreach(matchedInjectedString => {
-            //println("String: " + matchedInjectedString + " length: " + matchedInjectedString.length)
             val finalKey = logErrorLevel
             val finalValue: Int = matchedInjectedString.length
             word.set(finalKey)
-            //println("Key: " + finalKey + " Value: " + finalValue)
             logger.debug(s"${this.getClass.getName}, writing to context:($word,$finalValue)")
             context.write(word, new IntWritable(finalValue))
           })
@@ -50,4 +48,3 @@ class JobFourMapper extends Mapper[Object, Text, Text, IntWritable] {
       case _ =>
   }
 }
-
