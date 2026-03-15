@@ -1,6 +1,8 @@
-# distributed-log-processor
+# Distributed Log Processor (Map Reduce)
 
-A distributed log file analytics engine built on Apache Hadoop MapReduce. Processes large-scale log files to compute various statistics such as message type distributions, filtered error counts, and character length analysis — all configurable via a single config file with no hardcoded values.
+A distributed log file analytics engine built on Apache Hadoop MapReduce. Processes large-scale log files to compute various statistics such as message type distributions, filtered error counts, and character length analysis - all configurable via a single config file with no hardcoded values.
+
+AWS Deployment Movie Link : [Movie Link](https://youtu.be/vOn6nXUGfgU)
 
 ## Features
 
