@@ -1,6 +1,6 @@
 package TestModule
 
-import com.asif.HelperUtils.ComputeIntervals
+import com.logprocessor.utils.ComputeIntervals
 import com.typesafe.config.{Config, ConfigFactory}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -29,7 +29,7 @@ class HelperUtilsTest extends AnyFlatSpec with Matchers {
   }
 
   it should "Match timeStamp from LogPattern" in {
-    val sampleLog = "09:01:14.477 [scala-execution-context-global-12] INFO  com.asif.HelperUtils.Parameters$ - Pf|lrfh@j-oz~W"
+    val sampleLog = "09:01:14.477 [scala-execution-context-global-12] INFO  com.logprocessor.utils.Parameters$ - Pf|lrfh@j-oz~W"
     val LogPattern = new Regex(config.getString("LogPattern"))
     sampleLog match
       case LogPattern(timeStamp, _*) =>
@@ -40,7 +40,7 @@ class HelperUtilsTest extends AnyFlatSpec with Matchers {
 
 
   it should "Match logErrorLevel from LogPattern" in {
-    val sampleLog = "09:01:14.477 [scala-execution-context-global-12] INFO  com.asif.HelperUtils.Parameters$ - Pf|lrfh@j-oz~W"
+    val sampleLog = "09:01:14.477 [scala-execution-context-global-12] INFO  com.logprocessor.utils.Parameters$ - Pf|lrfh@j-oz~W"
     val LogPattern = new Regex(config.getString("LogPattern"))
     sampleLog match {
       case LogPattern(_, _, extractedLogErrorLevel, _, _) =>

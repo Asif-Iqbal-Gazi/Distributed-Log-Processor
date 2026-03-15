@@ -1,6 +1,6 @@
-package com.asif.Reducer
+package com.logprocessor.reducer
 
-import com.asif.HelperUtils.CreateLogger
+import com.logprocessor.utils.CreateLogger
 import org.apache.hadoop.io.{IntWritable, Text}
 import org.apache.hadoop.mapreduce.Reducer
 import org.slf4j.Logger
@@ -10,16 +10,16 @@ import scala.jdk.CollectionConverters.IterableHasAsScala
 
 /**
  * This Reducer is Used by Task2 for Sorting the output in descending order by values.
- * It works in tandem with the SwapMapper
- * The SwapMapper swaps the key value pair of a previous MapReduce Job which had integer values. (By setting the new key as negative of previous Job's value)
- * This SwapReduces basically, reverses that process.
+ * It works in tandem with the SortingMapper
+ * The SortingMapper swaps the key value pair of a previous MapReduce Job which had integer values. (By setting the new key as negative of previous Job's value)
+ * This SortingReducer basically, reverses that process.
  * To do that, it is not straightforward as just swapping value and key, remember reducer gets list of values and
  * consider the situation when for same negative key we have multiple values.
  * To address this we first negate the key again to make it positive.
  * Now for all value(previous job's key) in values list, we write to the context(value, keyFromReducer)
  */
-class SwapReducer extends Reducer[IntWritable, Text, Text, IntWritable] {
-  val logger: Logger = CreateLogger(classOf[CommonReducer])
+class SortingReducer extends Reducer[IntWritable, Text, Text, IntWritable] {
+  val logger: Logger = CreateLogger(classOf[SortingReducer])
 
   override def reduce(key: IntWritable, values: lang.Iterable[Text], context: Reducer[IntWritable, Text, Text, IntWritable]#Context): Unit = {
     // Here we first make the key(value from previous Job) positive again

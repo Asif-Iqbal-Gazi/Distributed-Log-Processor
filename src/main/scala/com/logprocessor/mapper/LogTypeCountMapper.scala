@@ -1,6 +1,6 @@
-package com.asif.Mapper
+package com.logprocessor.mapper
 
-import com.asif.HelperUtils.CreateLogger
+import com.logprocessor.utils.CreateLogger
 import com.typesafe.config.{Config, ConfigFactory}
 import org.apache.hadoop.io.{IntWritable, Text}
 import org.apache.hadoop.mapreduce.Mapper
@@ -15,9 +15,9 @@ import scala.util.matching.Regex
  * If matched, it extracts logErrorLevel from the log message.
  * Finally, writes to the context.write(logErrorLevel, 1)
  */
-class JobThreeMapper extends Mapper[Object, Text, Text, IntWritable] {
+class LogTypeCountMapper extends Mapper[Object, Text, Text, IntWritable] {
   private final val one = new IntWritable(1)
-  val logger: Logger = CreateLogger(classOf[JobThreeMapper])
+  val logger: Logger = CreateLogger(classOf[LogTypeCountMapper])
   private val config: Config = ConfigFactory.load.getConfig("LogConfiguration")
   private val word = new Text()
 

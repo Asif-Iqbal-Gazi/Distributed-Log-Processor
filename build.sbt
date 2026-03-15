@@ -1,4 +1,4 @@
-name := "CS441_Homework1"
+name := "distributed-log-processor"
 version := "0.1"
 scalaVersion := "3.1.3"
 
